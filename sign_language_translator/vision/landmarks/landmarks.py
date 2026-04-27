@@ -251,13 +251,7 @@ class Landmarks(Sign):
         ],
         inplace=False,
     ) -> Landmarks:
-        data = transformation(self.data)  # type: ignore
-
-        if inplace:
-            self.data = data
-            return self
-
-        return Landmarks(data, connections=self._connections)
+        pass
 
     # ========================== #
     #    Display / show frame    #
@@ -301,18 +295,7 @@ class Landmarks(Sign):
             columns (int): The number of columns in the grid. Default is 5.
             **kwargs: Additional keyword arguments to be passed to the `slt.vision.landmarks.MatPlot3D.frames_grid` function.
         """
-        fig = MatPlot3D.frames_grid(
-            self.numpy(),
-            (rows, columns),
-            **(self.connections.matplot3d_config if self._connections else {}),
-            figure_title=kwargs.pop(
-                "figure_title", self._caption or basename(self._path or "")
-            ),
-            **kwargs,
-        )
-        plt.show(block=False)
-        plt.pause(5)
-        plt.close(fig)
+        pass
 
     def new_animation(
         self,
@@ -417,18 +400,7 @@ class Landmarks(Sign):
             writer (Optional[str], optional): The name of the matplotlib writer to use for saving the animation. Defaults to None.
             **kwargs: Additional keyword arguments to be passed to the `new_animation` method.
         """
-
-        path = validate_path_exists(path, overwrite=overwrite)
-
-        if self._animation is None or kwargs:
-            self._animation = self.new_animation(**kwargs)
-
-        with tqdm(total=len(self), desc="Saving animation", unit="frames") as bar:
-            self.animation.save(
-                path, progress_callback=(lambda *args: bar.update()), writer=writer
-            )
-
-        _reset_counter_in_animation_title(self.animation)
+        pass
         # plt.close()
 
     def save_frames_grid(
@@ -448,19 +420,7 @@ class Landmarks(Sign):
             overwrite (bool, optional): Whether to overwrite the file if it already exists. Defaults to True.
             **kwargs: Additional keyword arguments to customize the grid passed to the `slt.vision.landmarks.MatPlot3D.frames_grid` function.
         """
-        path = validate_path_exists(path, overwrite=overwrite)
-
-        fig = MatPlot3D.frames_grid(
-            self.numpy(),
-            (rows, columns),
-            **(self.connections.matplot3d_config if self._connections else {}),
-            figure_title=kwargs.pop(
-                "figure_title", self._caption or basename(self._path or "")
-            ),
-            **kwargs,
-        )
-        fig.savefig(path)
-        plt.close(fig)
+        pass
 
     # ========== #
     #    Load    #
@@ -526,25 +486,7 @@ class Landmarks(Sign):
                 # Load a replication video's landmarks from the built-in datasets
                 landmarks = slt.Landmarks.load_asset("landmarks/pk-hfad-1_airplane_dm0001_front.landmarks-mediapipe.csv", archive_name="datasets/pk-hfad-1_dm0001_front.landmarks-mediapipe-csv.zip")
         """
-
-        if "/" not in label:
-            label = f"landmarks/{label}"
-
-        paths = Assets.extract(
-            label,
-            archive_name_or_regex=archive_name,
-            download_archive=True,
-            overwrite=overwrite,
-            progress_bar=progress_bar,
-            leave=leave,
-        )
-
-        if len(paths) == 0:
-            raise FileNotFoundError(f"No landmarks assets found for '{label}'")
-        if len(paths) > 1:
-            warn(f"Multiple landmarks assets matched '{label}'. Using first of:{paths}")
-
-        return cls.load(paths[0], **kwargs)
+        pass
 
     def __initialize_from_arguments(
         self,
@@ -657,22 +599,11 @@ class Landmarks(Sign):
     @property
     def data(self) -> Union[NDArray, Tensor]:
         """The landmarks data which is a 3D array or tensor of shape (n_frames, n_landmarks, n_features)."""
-        if self._data is None:
-            raise ValueError("No data has been loaded yet")
-        return self._data
+        pass
 
     @data.setter
     def data(self, value: Union[NDArray, Tensor]):
-        if value.ndim != 3:
-            raise ValueError(
-                "Expected value to be 3D (n_frames, n_landmarks, n_features)"
-                f" but got {value.ndim}D"
-            )
-        if self._connections and value.shape[1] != self.connections.n_landmarks:
-            raise ValueError(
-                f"Expected data to have {self.connections.n_landmarks} landmarks, got {value.shape[1]}"
-            )
-        self._data = value
+        pass
 
     def __len__(self) -> int:
         return self.data.shape[0]
@@ -680,32 +611,32 @@ class Landmarks(Sign):
     @property
     def n_frames(self) -> int:
         """The number of frames or time-steps in the landmarks data object."""
-        return len(self)
+        pass
 
     @property
     def n_landmarks(self) -> int:
         """The number of landmarks in each frame."""
-        return self.data.shape[1]
+        pass
 
     @property
     def n_features(self) -> int:
         """The number of features (coordinates) for each landmark."""
-        return self.data.shape[2]
+        pass
 
     @property
     def n_coordinates(self) -> int:
         """The number of axes/coordinates (features) for each landmark."""
-        return self.n_features
+        pass
 
     @property
     def shape(self) -> Tuple[int, ...]:
         """number of elements in each of the data array's dimensions e.g. (n_frames, n_landmarks, n_features)"""
-        return tuple(self.data.shape)
+        pass
 
     @property
     def ndim(self) -> int:
         """The number of dimensions of the landmarks data array (should be 3)."""
-        return self.data.ndim
+        pass
 
     @property
     def connections(self) -> BaseConnections:
@@ -716,23 +647,11 @@ class Landmarks(Sign):
         Raises:
             ValueError: If this property is accessed before landmarks connections have been defined.
         """
-        if self._connections is None:
-            raise ValueError("No landmarks connections have been defined yet.")
-        return self._connections
+        pass
 
     @connections.setter
     def connections(self, value: Union[BaseConnections, str]):
-        if isinstance(value, str):
-            value = get_connections(value)
-        elif not isinstance(value, BaseConnections) and value is not None:
-            raise TypeError(f"Expected BaseConnections object or string, got {value}")
-
-        # check if connections are compatible with data
-        if self._data is not None and value.n_landmarks != self.n_landmarks:
-            raise ValueError(
-                f"Expected connections to have {self.n_landmarks} landmarks, got {value.n_landmarks}"
-            )
-        self._connections = value
+        pass
 
     @property
     def animation(self) -> FuncAnimation:
@@ -742,28 +661,14 @@ class Landmarks(Sign):
         Note:
             For interactive display in a Jupyter notebook, use `%matplotlib widget` magic command and then run a cell with `landmarks_obj.animation` on last line.
         """
-        if self._animation is None:
-            self._animation = self.new_animation()
-        return self._animation
+        pass
 
     # =========== #
     #    Utils    #
     # =========== #
 
     def __normalize_slice_indices(self, indices) -> Tuple:
-        if not isinstance(indices, tuple):
-            indices = (indices,)
-
-        # typecast indices into self.data's compatible type
-        indices = tuple(
-            (
-                ArrayOps.cast(idx, type(self.data), _dtype=int)
-                if isinstance(idx, (np.ndarray, Tensor))
-                else slice(idx, (idx + 1) or None) if isinstance(idx, int) else idx
-            )
-            for idx in indices
-        )
-        return indices
+        pass
 
     def __make_csv_header(self, n_landmarks: int, n_features: int):
         axes = list("xyz" + ascii_letters[:23])

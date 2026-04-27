@@ -72,21 +72,7 @@ class PakistanSignLanguage(SignLanguage):
         contexts: Optional[Iterable[Any]] = None,
     ) -> List[Dict[str, Union[List[List[str]], List[float]]]]:
         # fix args
-        if isinstance(tokens, str):
-            tokens = [tokens]
-        if not tags:
-            tags = [None for _ in tokens]
-        if not contexts:
-            contexts = [None for _ in tokens]
-
-        # map tokens to signs
-        signs = [
-            sign_dict
-            for token, tag, context in zip(tokens, tags, contexts)
-            for sign_dict in self._apply_rules(token, tag, context)
-        ]
-
-        return signs
+        pass
 
     def _apply_rules(
         self, token: str, tag=None, context=None
@@ -104,27 +90,7 @@ class PakistanSignLanguage(SignLanguage):
             List[Dict[str, List[List[str]] | List[float]]]:
                 A list of sign dictionaries for the token.
         """
-
-        sign = None
-        priority = float("inf")
-
-        for rule in self.mapping_rules:
-            if rule.is_applicable(token.lower(), tag, context):
-                if rule.priority < priority or (
-                    rule.priority == priority and random.random() < 0.5
-                ):
-                    sign = rule.apply(token.lower())
-                    priority = rule.priority
-
-        if sign is None and tag == Tags.AMBIGUOUS:
-            raise ValueError(
-                f"Token '{token}' is ambiguous."
-                + f"Try from {self.vocab.ambiguous_to_unambiguous.get(token,[])}."
-            )
-        if sign is None:
-            raise ValueError(f"No PakistanSL sign could be inferred for {token = }.")
-
-        return sign
+        pass
 
     def restructure_sentence(
         self,
@@ -133,37 +99,7 @@ class PakistanSignLanguage(SignLanguage):
         contexts: Optional[Iterable[Any]] = None,
     ) -> Tuple[Iterable[str], Iterable[Any], Iterable[Any]]:
         # Fix the args
-        tags = [Tags.DEFAULT for _ in sentence] if tags is None else tags
-        contexts = [None for _ in sentence] if contexts is None else contexts
-
-        # map to urdu grammar "he goes to school" -> ["he", "school", "go"]
-        restructured_sentence = []
-        restructured_tags = []
-        restructured_contexts = []
-
-        # drop stuff
-        for token, tag, context in zip(sentence, tags, contexts):
-            # drop stop-words
-            if token.lower() in self.STOPWORDS:
-                continue
-
-            # drop space and punctuation
-            if tag in {Tags.SPACE, Tags.PUNCTUATION}:
-                continue
-
-            # make numbers "numeric"
-            if tag == Tags.NUMBER and "," in token:
-                token = token.replace(",", "")
-
-            # drop word-sense: "(name)" from the NAME token
-            if tag == Tags.NAME:
-                token = re.sub(self.vocab.word_sense_regex, "", token)
-
-            restructured_sentence.append(token)
-            restructured_tags.append(tag)
-            restructured_contexts.append(context)
-
-        return restructured_sentence, restructured_tags, restructured_contexts
+        pass
 
     def __call__(
         self,

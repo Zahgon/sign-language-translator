@@ -397,19 +397,7 @@ class VideoEmbeddingPipeline:
         Returns:
             None
         """
-
-        # TODO: handle batched data
-
-        video = self.__read_video(path)
-        embedding = self.__embed_video(video, **kwargs)
-        # TODO: frames progress callback
-        self.__save_embedding(
-            embedding,
-            basename(path),
-            output_dir=output_dir,
-            file_format=save_format,
-            overwrite=overwrite,
-        )
+        pass
 
     def process_videos_parallel(
         self,
@@ -434,66 +422,13 @@ class VideoEmbeddingPipeline:
         Returns:
             None
         """
-
-        paths = {abspath(path) for pattern in path_patterns for path in glob(pattern)}
-
-        # warn if multiple paths have the same base name
-        base_to_paths: Dict[str, List[str]] = {}
-        for path in paths:
-            if (base := basename(path)) not in base_to_paths:
-                base_to_paths[base] = []
-            base_to_paths[base].append(path)
-
-        clashing_paths = [
-            path for paths in base_to_paths.values() for path in paths if len(paths) > 1
-        ]
-        if clashing_paths:
-            warn(
-                "Found multiple paths with the same base name"
-                + f" (overwrite=True will prevent skipping). {clashing_paths = }"
-            )
-
-        # optionally skip over existing targets
-        if not overwrite:
-            existing_targets = [
-                (join(output_dir, basename(path)) + f".{save_format}") for path in paths
-            ]
-            existing_targets = {path for path in existing_targets if exists(path)}
-            for path in existing_targets:
-                warn(
-                    f"Target file already exists at {path}. Use overwrite=True to prevent skipping."
-                )
-            existing_sources = {
-                basename(path)[: -len(save_format) - 1] for path in existing_targets
-            }
-            paths = {path for path in paths if basename(path) not in existing_sources}
-
-        paths = sorted(paths)
-        if len(paths) < 1:
-            return
-
-        # process
-        n_processes = min(n_processes, len(paths), multiprocessing.cpu_count())
-        partial_process_video = partial(
-            self.process_video,
-            save_format=save_format,
-            overwrite=overwrite,
-            output_dir=output_dir,
-            **kwargs,
-        )
-
-        if len(paths) == 1:
-            list(tqdm(map(partial_process_video, paths), total=1))
-            return
-
-        with multiprocessing.Pool(processes=n_processes) as pool:
-            list(tqdm(pool.imap(partial_process_video, paths), total=len(paths)))
+        pass
 
     def __read_video(self, path) -> Iterable[NDArray[numpy.uint8]]:
-        return iter_frames_with_opencv(path)
+        pass
 
     def __embed_video(self, video, **kwargs):
-        return self.model.embed(video, **kwargs)
+        pass
 
     def __save_embedding(
         self,
@@ -503,18 +438,4 @@ class VideoEmbeddingPipeline:
         file_format="csv",
         overwrite=False,
     ):
-        target_path = abspath(join(output_dir, filename) + f".{file_format}")
-
-        makedirs(output_dir, exist_ok=True)
-        if exists(target_path) and not overwrite:
-            warn(f"File already exists at {target_path}")
-            return
-
-        if file_format.lower() == "csv":
-            numpy.savetxt(target_path, embedding, delimiter=",")
-        elif file_format.lower() in ("torch", "pt"):
-            torch.save(embedding, target_path)
-        elif file_format.lower() == "npy":
-            numpy.save(target_path, embedding)
-        elif file_format.lower() == "npz":
-            numpy.savez_compressed(target_path, **{filename: embedding})
+        pass

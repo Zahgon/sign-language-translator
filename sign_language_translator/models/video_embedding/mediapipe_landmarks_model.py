@@ -106,90 +106,16 @@ class MediaPipeLandmarksModel(VideoEmbeddingModel):
         Returns:
             torch.Tensor: A tensor containing the frame embeddings.
         """
-
-        if mediapipe is None:
-            raise ImportError(
-                "The 'mediapipe' package is required to use the 'MediaPipeLandmarksModel'. "
-                "Install it using `pip install sign-language-translator[mediapipe]`."
-            )
-
-        if landmark_type not in ("world", "image", "all"):
-            raise ValueError(
-                "landmark_type not supported, use 'world', 'image' or 'all'."
-            )
-
-        # TODO: Pose only or hands only
-        if hasattr(frame_sequence, "__len__"):
-            total_frames = len(frame_sequence)  # type: ignore
-
-        embeddings = []
-
-        # TODO: create here or in __init__ ??
-        with self._pose_class.create_from_options(
-            self._pose_options
-        ) as pose_landmarker, self._hand_class.create_from_options(
-            self._hand_options
-        ) as hand_landmarker:
-            for i, frame in enumerate(frame_sequence):
-                # convert frame to mediapipe image
-                mp_image = mediapipe.Image(
-                    image_format=mediapipe.ImageFormat.SRGB,
-                    data=np.array(frame),
-                )
-
-                # infer through models
-                pose_result = pose_landmarker.detect_for_video(mp_image, i)
-                hand_result = hand_landmarker.detect_for_video(mp_image, i)
-
-                # create & append the frame embedding
-                poses = self._extract_from_pose_results(pose_result)
-                hands = self._extract_from_hand_results(hand_result)
-                persons = self._arange_pose_and_hands(poses, hands)
-                frame_embedding = self._create_frame_embedding(persons, landmark_type)
-
-                embeddings.append(frame_embedding)
-                if progress_callback and total_frames:
-                    progress_callback(
-                        {"file": f"{i / total_frames:.1%}" if total_frames else "?%"}
-                    )
-
-        return torch.Tensor(embeddings)
+        pass
 
     def _flatten_landmarks(self, landmarks) -> List[float]:
-        return [
-            value
-            for lm in landmarks
-            for value in [lm.x, lm.y, lm.z, lm.visibility, lm.presence]
-        ]
+        pass
 
     def _extract_from_pose_results(self, pose_result) -> Dict[str, List[List[float]]]:
-        poses = {"image": [], "world": []}
-
-        for pose_image, pose_world in zip(
-            pose_result.pose_landmarks, pose_result.pose_world_landmarks
-        ):
-            poses["image"].append(self._flatten_landmarks(pose_image))
-            poses["world"].append(self._flatten_landmarks(pose_world))
-
-        return poses
+        pass
 
     def _extract_from_hand_results(self, hand_result) -> Dict[str, List[List[float]]]:
-        hands = {
-            "Left_image": [],
-            "Left_world": [],
-            "Right_image": [],
-            "Right_world": [],
-        }
-        for hnd, image, world in zip(
-            hand_result.handedness,
-            hand_result.hand_landmarks,
-            hand_result.hand_world_landmarks,
-        ):
-            # flatten & separate
-            hands[hnd[0].display_name + "_image"].append(self._flatten_landmarks(image))
-            hands[hnd[0].display_name + "_world"].append(self._flatten_landmarks(world))
-
-        return hands
+        pass
 
     def _arange_pose_and_hands(
         self,
@@ -199,34 +125,12 @@ class MediaPipeLandmarksModel(VideoEmbeddingModel):
         # TODO: Match left & right hands to poses
         # by using minimum distance between hand image centers
         # np.linalg.norm(pose[left_hand_ids].mean(axis=...), hands.mean(axis=...).T).argmin(axis=...)
-        default_hand = [0.0] * 5 * 21
-        default_pose = [0.0] * 5 * 33
-
-        for k in poses.keys():
-            poses[k] += [default_pose] * (self.n_persons - len(poses[k]))
-
-        for k in hands.keys():
-            hands[k] += [default_hand] * (self.n_persons - len(hands[k]))
-
-        return {
-            key: [
-                poses[key][p] + hands["Left_" + key][p] + hands["Right_" + key][p]
-                for p in range(self.n_persons)
-            ]  # TODO: order of persons should be the same across frames
-            for key in ["image", "world"]
-        }
+        pass
 
     def _create_frame_embedding(
         self, persons: Dict[str, List[List[float]]], landmark_type: str
     ) -> List[float]:
-        embedding = []
-        # flatten & concat
-        if landmark_type in ("world", "all"):
-            embedding.extend([value for person in persons["world"] for value in person])
-        if landmark_type in ("image", "all"):
-            embedding.extend([value for person in persons["image"] for value in person])
-
-        return embedding
+        pass
 
     def __download_and_get_model_path(self, model_local_path: str):
         Assets.download(

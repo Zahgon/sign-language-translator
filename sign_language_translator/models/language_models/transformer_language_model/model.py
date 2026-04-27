@@ -373,13 +373,7 @@ class TransformerLanguageModel(LanguageModel, torch.nn.Module):
         Returns:
             List[str]: A list of tokens corresponding to the input IDs.
         """
-
-        if isinstance(ids, int):
-            ids = [ids]
-        elif isinstance(ids, torch.Tensor):
-            ids = ids.tolist()
-
-        return [self.id_to_token.get(i, self.unknown_token) for i in ids]
+        pass
 
     def to(self, device, *args, **kwargs):
         self.device = device
@@ -388,12 +382,7 @@ class TransformerLanguageModel(LanguageModel, torch.nn.Module):
         return self
 
     def _initialize_weights(self, module):
-        if isinstance(module, torch.nn.Linear):
-            torch.nn.init.normal_(module.weight, mean=0.0, std=0.02)
-            if module.bias is not None:
-                torch.nn.init.zeros_(module.bias)
-        elif isinstance(module, torch.nn.Embedding):
-            torch.nn.init.normal_(module.weight, mean=0.0, std=0.02)
+        pass
 
     def _make_position_ids(self, token_ids: torch.Tensor) -> torch.Tensor:
         """Generates position IDs for the given token IDs (normally from 0 to seq_len-1).

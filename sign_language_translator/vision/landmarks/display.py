@@ -168,37 +168,7 @@ class MatPlot3D:
         Returns:
             List[Union[Path3DCollection, Line3D]]: A list containing the updated scatter plot and lines objects.
         """
-        if len(line_indexes) == 0 and lines:
-            line_indexes = _indexes_to_connect(len(points))
-
-        # update view
-        if ax is not None:
-            if ax.get_title():
-                ax.set_title(
-                    re.sub(
-                        r"\[t_-?\d+\]",
-                        lambda timestamp: f"[t_{int(timestamp.group()[3:-1])+1}]",
-                        ax.get_title(),
-                    )
-                )
-            if azimuth_delta:
-                ax.azim = ax.azim + azimuth_delta  # type: ignore
-            if elevation_delta:
-                ax.elev = ax.elev + elevation_delta  # type: ignore
-            if roll_delta:
-                ax.roll = ax.roll + roll_delta  # type: ignore
-
-        # update data
-        points = np.array(points)
-        scatter._offsets3d = (  # pylint: disable=protected-access
-            points[..., 0].ravel(),
-            points[..., 1].ravel(),
-            points[..., 2].ravel(),
-        )
-        for idx_track, line in zip(line_indexes, lines):
-            line.set_data_3d(points[..., idx_track, :3].T)
-
-        return [scatter] + list(lines)
+        pass
 
     @classmethod
     def animate(
@@ -381,63 +351,7 @@ class MatPlot3D:
         Returns:
             Figure: The generated matplotlib figure.
         """
-        frames = np.array(frames)
-        limits = np.stack([frames.min(axis=(0, 1))[:3], frames.max(axis=(0, 1))[:3]]).T
-        indexes = np.linspace(0, len(frames) - 1, np.prod(subplots)).round().astype(int)
-
-        if line_indexes is None:
-            line_indexes = _indexes_to_connect(len(frames[0]))
-        if not ticks_scale:
-            ticks_scale = _nearest_scale(limits.ptp(1).min())
-
-        fig, axes = cls.new_figure(
-            *limits,
-            vertical_axis=vertical_axis,
-            figure_scale=figure_scale,
-            style=style,
-            layout=layout,
-            subplots=subplots,
-        )
-
-        for i, ax in enumerate(axes):
-            cls.initialize_Axes3D(
-                ax,
-                *limits,
-                ticks_scale=ticks_scale,
-                azimuth=azimuth + i * azimuth_delta,
-                elevation=elevation + i * elevation_delta,
-                roll=roll + i * roll_delta,
-                vertical_axis=vertical_axis,
-                invert_x=invert_x,
-                invert_y=invert_y,
-                invert_z=invert_z,
-                show_grid=show_grid,
-                show_axis=show_axis,
-            )
-
-            scatter, lines = cls.placeholder_scatter_and_lines(
-                ax,
-                len(line_indexes),
-                line_colors=line_colors,
-                line_labels=line_labels,
-                scatter_color=scatter_color,
-                scatter_size=scatter_size,
-            )
-
-            if title:
-                ax.set_title(title.format(frame_number=f"[t_{indexes[i]}]"))
-
-            cls.set_frame_data(
-                frames[indexes[i]], scatter, lines, line_indexes=line_indexes
-            )
-
-        if line_labels:
-            fig.legend(handles=axes[0].lines, loc="center right")
-
-        if figure_title:
-            fig.suptitle(figure_title, fontsize=figure_title_font_size)
-
-        return fig
+        pass
 
 
 def _indexes_to_connect(n: int) -> List[List[int]]:

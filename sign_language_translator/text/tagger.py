@@ -76,13 +76,13 @@ class Rule:
         self.priority = priority
 
     def is_match(self, token: str):
-        return self.matcher(token)
+        pass
 
     def get_tag(self):
-        return self.tag
+        pass
 
     def get_priority(self):
-        return self.priority
+        pass
 
     @staticmethod
     def from_pattern(pattern: str, tag: Any, priority: int):
@@ -121,21 +121,10 @@ class Tagger:
         self.default = default
 
     def tag(self, tokens: Iterable[str]) -> List[Tuple[str, Any]]:
-        tagged_tokens = list(zip(tokens, self.get_tags(tokens)))
-
-        return tagged_tokens
+        pass
 
     def get_tags(self, tokens: Iterable[str]) -> List[Any]:
-        return [self._apply_rules(token) for token in tokens]
+        pass
 
     def _apply_rules(self, token: str) -> Any:
-        tag = self.default
-        priority = float("inf")
-
-        for rule in self.rules:
-            if rule.is_match(token):
-                if rule.get_priority() < priority:
-                    tag = rule.get_tag()
-                    priority = rule.get_priority()
-
-        return tag
+        pass

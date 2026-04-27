@@ -381,14 +381,7 @@ class Assets:
 
     @classmethod
     def delete(cls, filename_or_regex: str):
-        checksum = cls._read_checksum()
-        matching_ids = cls.get_ids(filename_or_regex)
-        for asset_id in matching_ids:
-            if exists(file_path := cls._abs_path(asset_id)):
-                os.remove(file_path)
-                checksum.pop(asset_id, None)
-
-        cls._write_checksum(checksum)
+        pass
 
     # ================= #
     #    URL Loading    #
@@ -399,9 +392,7 @@ class Assets:
         """
         Clear the cache and read the URL files again.
         """
-
-        cls.FILE_TO_URL = read_urls(join(cls.urls_file_dir, cls.primary_urls_file))
-        cls._loaded_url_files = set()
+        pass
 
     @classmethod
     def load_urls(cls, filename: str) -> None:
@@ -421,9 +412,7 @@ class Assets:
         """
         Load all URL files into the Assets.FILE_TO_URL dictionary.
         """
-        for _, urls_file in cls.asset_regex_to_urls_file:
-            cls.load_urls(urls_file)
-        cls.load_urls(r"([a-z-]+[-_])?urls.json")
+        pass
 
     # ============= #
     #    helpers    #
@@ -440,19 +429,7 @@ class Assets:
         Returns:
             bool: True if the filename represents a dictionary video, False otherwise.
         """
-        folder, basename = filename.split("/")
-        if folder != "videos":
-            return False
-
-        label, extension = basename.rsplit(".", maxsplit=1)
-        if extension != "mp4":
-            return False
-
-        chunks = label.split(Settings.FILENAME_SEPARATOR)
-        if len(chunks) == 2 and len(cls.get_ids(filename)) == 1:
-            return True
-
-        return False
+        pass
 
     @classmethod
     def _abs_path(cls, asset_id: str) -> str:

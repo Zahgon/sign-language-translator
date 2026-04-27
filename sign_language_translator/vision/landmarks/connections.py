@@ -63,22 +63,22 @@ class BaseConnections(ABC):
     @property
     def line_indexes(self) -> List[Sequence[int]]:
         """list of sequence of indexes that are connected with single line"""
-        return self._line_indexes
+        pass
 
     @property
     def line_colors(self) -> List[Tuple[int, int, int]]:
         """list of colors for each connection"""
-        return self._line_colors
+        pass
 
     @property
     def line_labels(self) -> List[str]:
         """list of labels for each connection"""
-        return self._line_labels
+        pass
 
     @property
     def matplot3d_config(self) -> Dict[str, Any]:
         """Configuration arguments for 3D matplotlib plot"""
-        return self._matplot3d_config
+        pass
 
     def _parse_connections(self) -> None:
         """extract line indexes, colors and labels from connections into separate lists"""
@@ -177,15 +177,15 @@ class MediapipeConnections(BaseConnections):
 
     @property
     def connections(self) -> List[Connection]:
-        return self._connections
+        pass
 
     @property
     def n_landmarks(self) -> int:
-        return self._n_landmarks
+        pass
 
     @property
     def n_features(self) -> int:
-        return self._n_features
+        pass
 
 
 def get_connections(connections: str) -> BaseConnections:

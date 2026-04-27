@@ -113,35 +113,7 @@ class NgramLanguageModel(LanguageModel):
         Raises:
             AssertionError: If the weightage is outside the valid range [0.0, 1.0].
         """
-
-        assert 0.0 <= weightage <= 1.0, "provide 0.0 <= weightage <= 1.0"
-
-        old_model = deepcopy(self.model)
-        self.fit(training_corpus)
-
-        for context in old_model:
-            if context not in self.model:
-                self.model[context] = old_model[context]
-            else:
-                old_weights = dict(
-                    zip(
-                        old_model[context][self._NEXT_TOKEN],
-                        old_model[context][self._WEIGHTS],
-                    )
-                )
-
-                # integrate weights of existing next_tokens
-                for i, next_token in enumerate(self.model[context][self._NEXT_TOKEN]):
-                    old_w = old_weights.pop(next_token, 0.0)
-                    self.model[context][self._WEIGHTS][i] *= weightage
-                    self.model[context][self._WEIGHTS][i] += old_w * (1 - weightage)
-
-                # append weights of remaining next_tokens
-                for next_token, old_w in old_weights.items():
-                    self.model[context][self._NEXT_TOKEN].append(next_token)
-                    self.model[context][self._WEIGHTS].append(old_w * (1 - weightage))
-
-        self.n_parameters = self._count_parameters()
+        pass
 
     def next(self, context: Iterable) -> Tuple[Any, float]:
         next_tokens, probabilities = self.next_all(context)

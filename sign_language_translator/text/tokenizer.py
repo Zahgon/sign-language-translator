@@ -62,31 +62,7 @@ class SignTokenizer:
         return broken
 
     def sentence_tokenize(self, text: str) -> List[str]:
-        tokens = self.tokenize(text)  # todo: split on end_of_sentence_tokens directly
-        sentences = []
-        sentence = []
-        previous_token = None
-        ended = False
-        for token in tokens:
-            if token in self.end_of_sentence_tokens:
-                ended = True
-                if (
-                    token in self.acronym_periods
-                    and previous_token in self.non_sentence_end_words  # type: ignore
-                ):
-                    ended = False
-            else:
-                if ended:
-                    sentences.append(self.detokenize(sentence))
-                    sentence = []
-                    ended = False
-            sentence.append(token)
-            previous_token = token
-
-        if sentence:
-            sentences.append(self.detokenize(sentence))
-
-        return sentences
+        pass
 
     def detokenize(self, tokens: Iterable[str]) -> str:
         return "".join(tokens)

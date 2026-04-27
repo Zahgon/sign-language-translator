@@ -159,40 +159,7 @@ class VectorLookupModel(TextEmbeddingModel):
         Returns:
             torch.Tensor: The embedded vector representation of the input text.
         """
-        # TODO: Handle batches
-
-        # found in the vocabulary
-        if text in self.known_tokens:
-            vector = self.vectors[self.token_to_index[text]].clone()
-            # scale to unit length
-            if pre_normalize:
-                if norm := vector.norm():
-                    vector = vector / norm
-        # Average of known tokens
-        else:
-            # break text into tokens
-            tokens = tokenizer(text)
-            indexes = [self.token_to_index[t] for t in tokens if t in self.known_tokens]
-            if len(indexes) > 0:
-                vectors = self.vectors[indexes].clone()
-                # scale to unit length
-                if pre_normalize:
-                    vectors = vectors / vectors.norm(dim=1, keepdim=True)
-                # average
-                vector = vectors.nanmean(dim=0)
-            # unable to embed
-            else:
-                vector = torch.zeros(self.vectors.shape[1:])
-
-        # scale to unit length
-        if post_normalize:
-            if norm := vector.norm():
-                vector = vector / norm
-
-        if align and self.alignment_matrix is not None:
-            vector = vector @ self.alignment_matrix
-
-        return vector
+        pass
 
     def __getitem__(self, token: str) -> torch.Tensor:
         """
@@ -213,18 +180,11 @@ class VectorLookupModel(TextEmbeddingModel):
 
     @property
     def normalized_vectors(self):
-        if self._normalized_vectors is None:
-            _norms = self.vectors.norm(dim=1, keepdim=True)
-            _norms[_norms == 0] = 1
-            self._normalized_vectors = self.vectors / _norms
-
-        return self._normalized_vectors
+        pass
 
     @property
     def tokens_array(self):
-        if self._tokens_array is None:
-            self._tokens_array = np.array(self.index_to_token)
-        return self._tokens_array
+        pass
 
     def similar(
         self, vector: torch.Tensor, k: int = 1
@@ -239,20 +199,7 @@ class VectorLookupModel(TextEmbeddingModel):
         Returns:
             Tuple[List[str], List[float]]: A tuple containing the k most similar tokens and their corresponding cosine similarities.
         """
-
-        # normalize the query vector
-        _norm = vector.norm(keepdim=True)
-        _norm[_norm == 0] = 1
-
-        # calculate cosine similarities
-        similarities = (vector / _norm) @ self.normalized_vectors.T
-        top_k_similarities, top_k_indexes = similarities.topk(k)
-
-        # return the top k similar tokens and their similarities
-        return (
-            self.tokens_array[top_k_indexes.numpy()].tolist(),
-            top_k_similarities.tolist(),
-        )
+        pass
 
     # =============== #
     #    load/save    #

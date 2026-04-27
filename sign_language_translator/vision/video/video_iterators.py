@@ -216,7 +216,7 @@ class VideoCaptureFrames(VideoFrames):
     @property
     def current_index(self) -> int:
         """Where the VideoCapture is currently pointing to."""
-        return int(self.video_capture.get(cv2.CAP_PROP_POS_FRAMES))
+        pass
 
     def seek(self, timestamp: Optional[float] = None, index: Optional[int] = None):
         """
@@ -277,19 +277,19 @@ class VideoCaptureFrames(VideoFrames):
 
     @property
     def height(self) -> int:
-        return self._height
+        pass
 
     @property
     def width(self) -> int:
-        return self._width
+        pass
 
     @property
     def n_channels(self) -> int:
-        return self._n_channels
+        pass
 
     @property
     def duration(self) -> float:
-        return self.total_frames / self.fps
+        pass
 
     def __enter__(self):
         return self
@@ -393,24 +393,24 @@ class SequenceFrames(VideoFrames):
     @property
     def total_frames(self) -> int:
         """total number of frames present in the sequence. (dimension=0)"""
-        return len(self.frames)
+        pass
 
     @property
     def height(self) -> int:
-        return self._height
+        pass
 
     @property
     def width(self) -> int:
-        return self._width
+        pass
 
     @property
     def n_channels(self) -> int:
-        return self._n_channels
+        pass
 
     @property
     def duration(self) -> float:
         """total time that the frames would take to play in a sequence. depends on fps."""
-        return (self.total_frames / self.fps) if self.fps else float("inf")
+        pass
 
 
 class IterableFrames(VideoFrames):
@@ -521,20 +521,20 @@ class IterableFrames(VideoFrames):
 
     @property
     def height(self) -> int:
-        return self._height
+        pass
 
     @property
     def width(self) -> int:
-        return self._width
+        pass
 
     @property
     def n_channels(self) -> int:
-        return self._n_channels
+        pass
 
     @property
     def duration(self) -> float:
         """total time that the frames would take to play in a sequence. depends on fps."""
-        return (self.total_frames / self.fps) if self.fps else float("inf")
+        pass
 
     def __copy__(self) -> IterableFrames:
         cls = self.__class__
@@ -586,20 +586,11 @@ class VideoSource(VideoFrames):
 
     @property
     def step_size(self) -> int:
-        return self._step_size
+        pass
 
     @step_size.setter
     def step_size(self, value: int):
-        if not isinstance(value, int):
-            raise ValueError("step_size must be an integer.")
-        if value > 0:
-            self.end_index -= (self.end_index - self.start_index) % value
-        elif value < 0:
-            self.start_index -= (self.end_index - self.start_index) % value
-        else:
-            raise ValueError("step_size cannot be 0")
-
-        self._step_size = value
+        pass
 
     def base_index(self, relative_index: int) -> int:
         return (
@@ -637,12 +628,12 @@ class VideoSource(VideoFrames):
 
     @property
     def height(self) -> int:
-        return self.source.height
+        pass
 
     @property
     def width(self) -> int:
-        return self.source.width
+        pass
 
     @property
     def n_channels(self) -> int:
-        return self.source.n_channels
+        pass

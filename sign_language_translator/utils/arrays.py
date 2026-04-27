@@ -167,14 +167,7 @@ class ArrayOps:
         Raises:
             TypeError: If the input type is not supported.
         """
-
-        x_tensor = ArrayOps.cast(x, Tensor)
-        values, indices = x_tensor.topk(k, dim=dim, largest=largest, sorted=True)
-
-        if isinstance(x, np.ndarray):
-            return values.numpy(), indices.numpy()
-
-        return values, indices
+        pass
 
     @overload
     @staticmethod
@@ -329,16 +322,7 @@ class ArrayOps:
         Note:
             Uses torch's random number generator to generate random values even for NumPy arrays.
         """
-
-        if data_type not in (np.ndarray, Tensor):
-            raise ValueError(f"Invalid `data_type` arg for random uniform: {data_type}")
-
-        random_values = torch.empty(size).uniform_(start, end)
-
-        if data_type == np.ndarray:
-            random_values = random_values.numpy()
-
-        return random_values
+        pass
 
     @staticmethod
     def random_normal(
@@ -369,19 +353,7 @@ class ArrayOps:
         Note:
             Uses torch's random number generator to generate random values even for NumPy arrays.
         """
-        if data_type not in (np.ndarray, Tensor):
-            raise ValueError(f"Invalid `data_type` arg for random normal: {data_type}")
-
-        random_values = (
-            torch.normal(loc, scale, size)
-            if start == float("-inf") and end == float("inf")
-            else torch.nn.init.trunc_normal_(torch.empty(size), loc, scale, start, end)
-        )
-
-        if data_type == np.ndarray:
-            random_values = random_values.numpy()
-
-        return random_values
+        pass
 
     @overload
     @staticmethod
@@ -469,51 +441,7 @@ class ArrayOps:
             steps = ArrayOps.steps(9, anchors, 0.2, 0.3, 2, 0.1, anchor_spacing_blend=0.5)
             # array([ 0.   ,  0.069, -1.333,  0.468,  1.538,  3.835,  4.897,  4.267,  2.   ])
         """
-
-        if (
-            random_uniform_frac < 0
-            or random_normal_frac < 0
-            or random_uniform_frac + random_normal_frac > 1
-        ):
-            raise ValueError(
-                f"Invalid fractions: {random_uniform_frac=}, {random_normal_frac=}."
-                "Provide non-negative values summing to <=1."
-            )
-
-        if anchor_spacing_blend < 0 or anchor_spacing_blend > 1:
-            raise ValueError(f"Invalid {anchor_spacing_blend=}. Expected 0<=blend<=1")
-
-        if not isinstance(anchors, (np.ndarray, Tensor)):
-            anchors = np.array(anchors)
-
-        n_uniform_steps = int(n_steps * random_uniform_frac)
-        n_normal_steps = (
-            int(n_steps * random_normal_frac / n_clusters) if n_clusters > 0 else 0
-        )
-        n_linear_steps = n_steps - n_uniform_steps - n_normal_steps * n_clusters
-
-        # calculate the distance between anchors and normalize it and then blend with equal anchor spacing
-        anchor_gap = np.cumsum(np.abs(np.diff(anchors, axis=-1, prepend=anchors[0])))
-        anchor_gap = anchor_gap / anchor_gap[-1] * (1 - anchor_spacing_blend)
-        anchor_gap = anchor_gap + np.linspace(0, 1, len(anchors)) * anchor_spacing_blend
-
-        cluster_std = cluster_std or float(np.std(anchor_gap)) / 10 * max(n_clusters, 1)
-
-        new_x = np.concatenate(
-            [
-                np.linspace(0, 1, n_linear_steps),
-                ArrayOps.random_uniform((n_uniform_steps,), 0, 1),
-            ]
-            + [
-                ArrayOps.random_normal(
-                    (n_normal_steps,), np.random.rand(), cluster_std, 0, 1
-                )
-                for _ in range(n_clusters)
-            ]
-        )
-        new_x = np.sort(new_x)
-
-        return linear_interpolation(anchors, new_x, old_x=anchor_gap, dim=-1)
+        pass
 
 
 @overload

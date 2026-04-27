@@ -30,11 +30,7 @@ class Perplexity:
         Args:
             corpus (Iterable[Iterable[Any]]): An iterable containing sequences of tokens.
         """
-
-        for sequence in corpus:
-            for token in sequence:
-                self.token_to_frequency[token] += 1
-                self.total_frequency += 1
+        pass
 
     def evaluate(self, sequence: Iterable[Any]) -> float:
         """Calculate the perplexity of a given sequence.
@@ -45,14 +41,7 @@ class Perplexity:
         Returns:
             float: The perplexity value for the given sequence.
         """
-
-        log_probabilities = [
-            log2(self.token_to_frequency[token] / self.total_frequency)
-            for token in sequence
-        ]
-        perplexity = 2 ** (-1 / len(sequence) * sum(log_probabilities))  # type: ignore
-
-        return perplexity
+        pass
 
 
 # def cosine_similiarity(text1, text2):

@@ -321,11 +321,7 @@ class ListRegex:
         Returns:
             List[List[str]]: A list of matched subsequences of items.
         """
-
-        matches = [
-            items[start:end] for start, end in ListRegex.find_all_spans(items, patterns)
-        ]
-        return matches
+        pass
 
     @staticmethod
     def find_all_spans(items: List[str], patterns: List) -> List[Tuple[int, int]]:

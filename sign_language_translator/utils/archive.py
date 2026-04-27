@@ -77,25 +77,7 @@ class Archive:
         Raises:
             FileExistsError: If the archive_path already exists and overwrite is False.
         """
-
-        if exists(archive_path) and not overwrite:
-            raise FileExistsError(
-                f"'{archive_path = }' already exists. Use overwrite=True to replace it."
-            )
-
-        if isinstance(filename_or_patterns, str):
-            filename_or_patterns = [filename_or_patterns]
-
-        files = [f for pattern in filename_or_patterns for f in glob(pattern)]
-        added = set()
-
-        with zipfile.ZipFile(archive_path, "w", compression=compression) as zf:
-            for file in tqdm(files) if progress_bar else files:
-                if (base := basename(file)) not in added:
-                    zf.write(file, base)
-                    added.add(base)
-                else:
-                    warn(f"Skipping '{file}'. Already added a file of same base name.")
+        pass
 
     @staticmethod
     def list(
@@ -112,23 +94,7 @@ class Archive:
         Returns:
             List[str]: List of file names in the archive that match the criteria.
         """
-
-        # load
-        with zipfile.ZipFile(archive_path, "r") as zf:
-            names = zf.namelist()
-
-        # filter
-        if pattern not in ["", "*"]:
-            names = fnmatch.filter(names, pattern)
-
-        if regex not in ["", r".*"]:
-            names = [
-                n
-                for n in names
-                if (re.match(regex, n) if is_regex(regex) else n == regex)
-            ]
-
-        return names
+        pass
 
     @staticmethod
     def extract(

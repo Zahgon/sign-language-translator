@@ -87,14 +87,14 @@ class LambdaMappingRule(MappingRule):
         self._priority = priority
 
     def is_applicable(self, token, tag=None, context=None) -> bool:
-        return self.is_applicable_function(token, tag, context)
+        pass
 
     def apply(self, token) -> Any:
         return self.apply_function(token)
 
     @property
     def priority(self):
-        return self._priority
+        pass
 
 
 class DirectMappingRule(MappingRule):
@@ -111,14 +111,14 @@ class DirectMappingRule(MappingRule):
         self._priority = priority
 
     def is_applicable(self, token, tag=None, context=None) -> bool:
-        return token in self.token_to_object
+        pass
 
     def apply(self, token: str) -> Any:
         return self.token_to_object[token]
 
     @property
     def priority(self):
-        return self._priority
+        pass
 
 
 class CharacterByCharacterMappingRule(MappingRule):
@@ -142,9 +142,7 @@ class CharacterByCharacterMappingRule(MappingRule):
         self._priority = priority
 
     def is_applicable(self, token, tag=None, context=None) -> bool:
-        return tag in self.allowed_tags and all(
-            char in self.token_to_object for char in token
-        )
+        pass
 
     def apply(self, token) -> List[Any]:
         """Apply the mapping rule to the given token.
@@ -160,4 +158,4 @@ class CharacterByCharacterMappingRule(MappingRule):
 
     @property
     def priority(self):
-        return self._priority
+        pass

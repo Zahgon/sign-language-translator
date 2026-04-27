@@ -86,21 +86,4 @@ class TextLanguage(ABC):
             character_translation_table (Optional[Dict[int, str]], optional): A dictionary mapping unicode of single characters to their latin equivalent. Defaults to None.
             n_gram_map (Optional[Dict[str, str]], optional): A dictionary mapping bigrams, trigrams or more to their latin equivalent. Keys are expected to be regular expressions. Defaults to None.
         """
-
-        # map (n>1)-grams
-        if isinstance(n_gram_map, dict):
-            re_operators = re.compile(r"[\+\*\?\|\[\]\{\}\^\$<=\!\(\)]|(\\[bdwWs])")
-            for ngram in sorted(  # ToDo: optimize
-                n_gram_map.keys(),
-                key=lambda x: len(re_operators.sub("", x)),
-                reverse=True,
-            ):
-                text = re.sub(ngram, n_gram_map[ngram], text)
-
-        # map unigrams
-        text = text.translate(character_translation_table or {})
-
-        if not add_diacritics:
-            text = re.sub("[ ̄ ̣ ̂ ̇ ̲ ̆ ̤ ̃ ́]".replace(" ", ""), "", text)
-
-        return text
+        pass

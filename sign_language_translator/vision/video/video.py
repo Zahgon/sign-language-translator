@@ -238,60 +238,7 @@ class Video(Sign, VideoFrames):
         Returns:
             Video: The trimmed video.
         """
-
-        # allow negative indexing
-        if start_index and start_index < 0:
-            start_index = start_index + len(self)
-        if end_index and end_index < 0:
-            end_index = end_index + len(self)
-        if start_time and start_time < 0:
-            start_time = start_time + self.duration
-        if end_time and end_time < 0:
-            end_time = end_time + self.duration
-
-        # trim till end if only start is specified
-        if start_time is not None and end_index is None and end_time is None:
-            end_time = self.duration
-        if start_index is not None and end_index is None and end_time is None:
-            end_index = len(self) - 1
-
-        # trim from 0 if only end is specified
-        if end_time is not None and start_time is None and start_index is None:
-            start_time = 0
-        if end_index is not None and start_time is None and start_index is None:
-            start_index = 0
-
-        # validate arguments
-        start_time, start_index = _normalize_args_index_and_timestamp(
-            start_time, start_index, self.duration or float("inf"), len(self) - 1
-        )
-        end_time, end_index = _normalize_args_index_and_timestamp(
-            end_time, end_index, self.duration or float("inf"), len(self) - 1
-        )
-        if start_index > end_index:
-            raise ValueError(
-                f"invalid cut points. {start_index = } is not smaller than {end_index = }."
-            )
-
-        # get nodes to be trimmed
-        start_node, relative_start_index = self.__get_node(start_index)
-        end_node, relative_end_index = self.__get_node(end_index)
-        if not end_node or not start_node:
-            raise IndexError(
-                f"Error trimming frames at {start_index = }, {end_index = }."
-            )
-
-        # trim
-        remaining_nodes = end_node.__next
-        end_node_source_end_index = end_node._source_end_index
-        end_node.__next = None
-        end_node._source_end_index = relative_end_index
-        new = copy(start_node)
-        end_node.__next = remaining_nodes
-        end_node._source_end_index = end_node_source_end_index
-        new._source_start_index = relative_start_index
-
-        return new
+        pass
 
     def iter_frames(
         self, start: int = 0, end: Optional[int] = None, step: Optional[int] = None
@@ -464,10 +411,7 @@ class Video(Sign, VideoFrames):
             timestamp (Optional[float], optional): The timestamp of the frame to display. If not provided, `index` will be used. Defaults to None.
             index (Optional[int], optional): The index of the frame to display. If not provided, `timestamp` will be used. Defaults to None.
         """
-        frame = self.get_frame(timestamp=timestamp, index=index)
-
-        if frame is not None:
-            VideoDisplay.display_frames([frame], inline_player="jshtml")
+        pass
 
     def frames_grid(
         self,
@@ -491,29 +435,7 @@ class Video(Sign, VideoFrames):
         Returns:
             NDArray[np.uint8]: an RGB 3D numpy array containing the stacked frames. shape: (height, width, color_channels).
         """
-        grid = np.concatenate(
-            [
-                np.concatenate([self.get_frame(index=id) for id in ids_in_row], axis=1)
-                for ids_in_row in np.linspace(0, len(self) - 1, rows * columns)
-                .reshape(rows, columns)
-                .round()
-                .astype(int)
-            ],
-            axis=0,
-        )
-
-        if width or height:
-            # calculate height or width of grid by maintaining aspect ratio of cell
-            aspect_ratio = (self.width * columns) / (self.height * rows)
-
-            if width and not height:
-                height = int(width / aspect_ratio)
-            elif height and not width:
-                width = int(height * aspect_ratio)
-
-            grid = cv2.resize(grid, (width, height))  # type: ignore
-
-        return grid
+        pass
 
     def show_frames_grid(
         self,
@@ -531,9 +453,7 @@ class Video(Sign, VideoFrames):
             width (Optional[int], optional): The width of the grid. If only `height` is given, the resized width is calculated by maintaining the aspect ratio of the grid cell. If both are None, the grid is not resized. Defaults to 800.
             height (Optional[int], optional): The height of the grid. If only `width` is given, the resized height is calculated by maintaining the aspect ratio of the grid cell. If both are None, the grid is not resized. Defaults to None.
         """
-        grid = self.frames_grid(rows=rows, columns=columns, width=width, height=height)
-
-        VideoDisplay.display_frames([grid], inline_player="jshtml")
+        pass
 
     # ================= #
     #    Concatenate    #
@@ -682,17 +602,7 @@ class Video(Sign, VideoFrames):
         Returns:
             None
         """
-
-        if not isinstance(transformation, (Callable,)):
-            raise ValueError(
-                f"Cannot apply this transformation because it is not callable. {transformation = }"
-            )
-
-        self.transformations.append(transformation)
-        if self.__next:
-            self.__next.transform(transformation)
-
-        self.__update_shape_components()
+        pass
 
     # ================ #
     #    Dimensions    #
@@ -708,42 +618,32 @@ class Video(Sign, VideoFrames):
     @property
     def shape(self) -> Tuple[int, int, int, int]:
         """Tuple of array dimensions (n_frames, height, width, n_channels)."""
-        return len(self), self.height, self.width, self.n_channels
+        pass
 
     @property
     def height(self) -> int:
         """number of vertical pixels in a video frame (dimension=1)"""
-        if self._height is None:
-            raise ValueError("self._height is not defined.")
-        return self._height
+        pass
 
     @property
     def width(self) -> int:
         """number of horizontal pixels in a video frame (dimension=2)"""
-        if self._width is None:
-            raise ValueError("self._width is not defined.")
-        return self._width
+        pass
 
     @property
     def n_channels(self) -> int:
         """number of color channels in a video frame (e.g. RGB) (dimension=3)"""
-        if self._n_channels is None:
-            raise ValueError("self._n_channels is not defined.")
-        return self._n_channels
+        pass
 
     @property
     def duration(self) -> float:
         """total time that the frames would take to play in a sequence. depends on fps."""
-        if self.fps is None:
-            # TODO: remove this
-            raise RuntimeError("FPS is not set. Can not get duration without fps.")
-
-        return len(self) / self.fps if self.fps else float("inf")
+        pass
 
     @property
     def n_frames(self) -> int:
         """The number of frames in the video."""
-        return len(self)
+        pass
 
     # ================== #
     #    Save to disk    #
@@ -864,11 +764,7 @@ class Video(Sign, VideoFrames):
             ValueError: If both or neither `timestamp` and `index` are provided or If the specified timestamp or index is out of range.
             FileExistsError: If a file already exists at the output path and `overwrite` is False.
         """
-        path = validate_path_exists(path, overwrite=overwrite)
-
-        frame = self.get_frame(timestamp=timestamp, index=index)
-        frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
-        cv2.imwrite(path, frame)
+        pass
 
     def save_frames_grid(
         self,
@@ -894,11 +790,7 @@ class Video(Sign, VideoFrames):
         Raises:
             FileExistsError: If a file already exists at the output path and `overwrite` is False.
         """
-        path = validate_path_exists(path, overwrite=overwrite)
-
-        grid = self.frames_grid(rows=rows, columns=columns, width=width, height=height)
-        grid = cv2.cvtColor(grid, cv2.COLOR_RGB2BGR)
-        cv2.imwrite(path, grid)
+        pass
 
     # ============================= #
     #    Initialize Video object    #
@@ -969,44 +861,7 @@ class Video(Sign, VideoFrames):
                 # Load a replication video from the built-in datasets
                 video = slt.Video.load_asset("videos/pk-hfad-1_airplane_dm0001_front.mp4", archive_name="datasets/pk-hfad-1_dm0001_front.videos-mp4.zip")
         """
-
-        if "/" not in label:
-            label = f"videos/{label}"
-
-        if "." not in label:
-            label = f"{label}.mp4"
-
-        paths = []
-        if Assets.is_dictionary_video(label):
-            # if no corresponding archive is already downloaded
-            if not any(
-                isfile(archive_path)
-                for archive_path in Assets.get_path(
-                    archive_name or Assets.infer_archive_name(label)
-                )
-            ):
-                # download video from direct URL
-                paths = Assets.download(
-                    label, progress_bar=progress_bar, leave=leave, overwrite=overwrite
-                )
-
-        # extract video from archive
-        if not paths:
-            paths = Assets.extract(
-                label,
-                archive_name_or_regex=archive_name,
-                download_archive=True,
-                overwrite=overwrite,
-                progress_bar=progress_bar,
-                leave=leave,
-            )
-
-        if len(paths) == 0:
-            raise FileNotFoundError(f"No video assets found for '{label}'")
-        if len(paths) > 1:
-            warn(f"Multiple video assets matched '{label}'. Using the first of:{paths}")
-
-        return cls.load(paths[0], **kwargs)
+        pass
 
     def __initialize_from_arguments(self, sign, **kwargs):
         if isinstance(sign, str):
@@ -1053,7 +908,7 @@ class Video(Sign, VideoFrames):
     @property
     def codec(self) -> str:
         """The video codec used to encode the video. (e.g. "mp4v", "h264", "xvid", "avc1", "hvc1")"""
-        return struct.pack("<I", self.fourcc).decode("utf-8")
+        pass
 
     def __update_shape_components(self) -> None:
         shape = self.get_frame(0).shape
@@ -1092,17 +947,11 @@ class Video(Sign, VideoFrames):
     @property
     def source(self) -> VideoFrames:
         """A VideoFrames object which wraps around a frame sequence."""
-        if self._source is None:
-            raise ValueError("Video source is not set.")
-        return self._source
+        pass
 
     @source.setter
     def source(self, source: VideoFrames):
-        if not isinstance(source, VideoFrames):
-            raise ValueError(
-                f"Invalid source type: {type(source)}. Should be slt.vision.video.VideoFrames"
-            )
-        self._source = source
+        pass
 
     # ============================= #
     #    Cleaning / with _ as _:    #
